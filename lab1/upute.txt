@@ -1,0 +1,39 @@
+OPIS SUSTAVA
+
+Zadatak za ovu laboratorijsku vježbu je izgraditi sustav upravitelja lozinkama koji služi za sigurno
+pohranjivanje lozinki i koji koristi simetričnu kriptografiju. Zaštita se postiže korištenjem AES algoritma 
+iz Crypto.Cipher za šifriranje lozinki koje se spremaju u datoteku. Za izvođenje ključa koristi se funkcija scrypt 
+iz Crypto.Protocol.KDF, koja otežava napade na sustav brute force metodom, a salt(sol) i nonce služe kako
+bi se osigurala jedinstvenost šifriranih poruka. Sustav zadovoljava sve tražene sigurnosne zahtjeve jer
+se lozinke šifriraju dovoljno jakim AES algoritmom i ključem iz jake funkcije scrypt, čime se osigurava
+jedinstvenost šifriranih poruka.
+
+Sustav ima ukupno tri naredbe - init, put i get. Prvom naredbom init inicijalizira se upravitelj
+lozinkama tako da se stvori prazna datoteka u koju se spremaju šifrirane lozinke. Potrebno je upisati
+glavnu zaporku upravitelja lozinkama koja služi za pristup svim lozinkama pri šifriranju i upisu u
+datoteku, ili dešifriranju i čitanju iz datoteke. Naredbom put sprema se nova lozinka za određenu web 
+stranicu u datoteku, a naredbom get dohvaća se lozinka za zadanu web stranicu iz datoteke. Za sve te
+naredbe potrebno je upisati glavnu lozinku upravitelja lozinkama kako bi se zaštitile lozinke pohranjene 
+u upravitelju. Primjeri naredbi prikazani su dolje. 
+
+
+
+
+UPUTE ZA POKRETANJE
+
+Pozicioniranje u radnu mapu
+- cd C:\Users\Filip\Desktop\FER\FER\6.sem\srs\lab1-gotovo
+
+Inicijalizacija glavne zaporke.
+- python solution.py init <glavnaLozinka>
+
+Spremanje zaporki web lokacije.
+- python solution.py put <glavnaLozinka> <webStranica> <šifra>
+
+Dohvat zaporke web lokacije.
+- python solution.py get <glavnaLozinka> <webStranica>
+
+
+
+POKRETANJE BASH SKRIPTE
+- pokreniLab1.sh

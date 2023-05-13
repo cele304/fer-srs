@@ -1,0 +1,52 @@
+Ovaj program sastoji se od dvije skripte - usermgmt i login.
+
+U datoteci korisnici.txt podaci se čuvaju u formatu korisničkoIme:hashLozinke:salt:{True/False - zastavica koja govori treba li korisnik promjeniti lozinku ili ne}
+
+Skripta usermgmt sastoji se od funkcija hash_password, ucitajKorisnike i upisiKorisnike.
+Funkcija ucitajKorisnike čita redke iz datoteke.
+Svaki redak odgovara jednom korisniku, a korisnik je pohranjen u gore navedenom formatu.
+Funkcija upisiKorisnike upisuje korisnike u datoteku korisnici.
+
+U main metodi ovisno o naredbi koju korisnik upiše kao argument pokreće se određena akcija.
+Ako upiše add - dodaje se korisnik u sustav
+	  psswrd - mijenja lozinku postojećeg korisnika
+	  forcepass - prisiljava korisnika na promjenu lozinke kad se idući put bude logirao
+	  del - briše korisnika iz sustava
+
+U main metodi skripte login ovisno o zastavici u bazi korisnik se ili samo ulogira u sustav ili uz to i izvršava promjenu lozinke.
+
+
+Za svakog korisnika koristi se poseban salt koji se mijenja pri svakoj promjeni lozinke, 
+a to se radi da u bazi dvije lozinke koje su jednake ne bi imale isti zapis i da bi se onemogućio rainbow tables napad.
+
+Pri izračunavanju kriptografskog sažetka se koristi pouzdana i provjerena funkcija bcrypt.
+
+Pri unosu lozinki, koristi se getpass da unešeni tekst ne bude vidljiv što poboljšava sigurnost lozinki prilikom unosa.
+Također, provjerava se i duljina lozinke koja mora biti najmanje duljine od 8 znakova
+
+
+
+UPUTE ZA POKRETANJE
+
+Pozicioniranje u radnu mapu
+- cd C:\Users\Filip\Desktop\FER\FER\6.sem\srs\lab2-gotovo
+
+Dodavanje korisnika u sustav
+- python usermgmt.py add <korisnickoIme>
+
+Promjena lozinke korisnika
+- python usermgmt.py passwd <korisnickoIme>
+
+Forsiranje promjene lozinke
+- python usermgmt.py forcepass <korisnickoIme>
+
+Brisanje korisnika iz baze
+- python usermgmt.py del <korisnickoIme>
+
+Prijava korisnika u sustav
+- python login.py add <korisnickoIme>
+
+
+
+POKRETANJE BASH SKRIPTE
+- pokreniLab2.sh

